@@ -113,6 +113,31 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
+                    .table(FavouriteGym::FavouriteGyms)
+                    .if_not_exists()
+                    .col(integer(FavouriteGym::ClimberID).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_favourite_gym_climber")
+                            .from(FavouriteGym::FavouriteGyms, FavouriteGym::ClimberID)
+                            .to(Climber::Climbers, Climber::ClimberID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(FavouriteGym::GymID).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_favourite_gym_gym")
+                            .from(FavouriteGym::FavouriteGyms, FavouriteGym::GymID)
+                            .to(Gym::Gyms, Gym::GymID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
                     .table(Hangboard::Hangboards)
                     .if_not_exists()
                     .col(pk_auto(Hangboard::HangboardID))
@@ -194,10 +219,213 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(FavouriteTraining::FavouriteTrainings)
+                    .if_not_exists()
+                    .col(integer(FavouriteTraining::ClimberID).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_favourite_training_climber")
+                            .from(FavouriteTraining::FavouriteTrainings, FavouriteTraining::ClimberID)
+                            .to(Climber::Climbers, Climber::ClimberID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(FavouriteTraining::TrainingTemplateID).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_favourite_training_training_template")
+                            .from(FavouriteTraining::FavouriteTrainings, FavouriteTraining::TrainingTemplateID)
+                            .to(TrainingTemplate::TrainingTemplates, TrainingTemplate::TrainingTemplateID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(ExerciseTemplate::ExerciseTemplates)
+                    .if_not_exists()
+                    .col(pk_auto(ExerciseTemplate::ExerciseTemplateID))
+                    .col(time(ExerciseTemplate::ActiveDuration).not_null())
+                    .col(integer(ExerciseTemplate::ActiveForce).not_null())
+                    .col(integer(ExerciseTemplate::GripTypeId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_exercise_template_grip_type")
+                            .from(ExerciseTemplate::ExerciseTemplates, ExerciseTemplate::GripTypeId)
+                            .to(GripType::GripTypes, GripType::GripTypeID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(time(ExerciseTemplate::RestDuration).not_null())
+                    .col(integer(ExerciseTemplate::RestForce).not_null())
+                    .to_owned(),
+            )
+            .await?;
+        
+        manager
+            .create_table(
+                Table::create()
+                    .table(TrainingExercise::TrainingExercises)
+                    .if_not_exists()
+                    .col(integer(TrainingExercise::TrainingTemplateID).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_training_exercise_training_template")
+                            .from(TrainingExercise::TrainingExercises, TrainingExercise::TrainingTemplateID)
+                            .to(TrainingTemplate::TrainingTemplates, TrainingTemplate::TrainingTemplateID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(TrainingExercise::ExerciseTemplateID).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_training_exercise_exercise_template")
+                            .from(TrainingExercise::TrainingExercises, TrainingExercise::ExerciseTemplateID)
+                            .to(ExerciseTemplate::ExerciseTemplates, ExerciseTemplate::ExerciseTemplateID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(TrainingExercise::Repetitions).not_null())
+                    .col(integer(TrainingExercise::Position).not_null())
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(TrainingRecord::TrainingRecords)
+                    .if_not_exists()
+                    .col(pk_auto(TrainingRecord::TrainingRecordID))
+                    .col(integer(TrainingRecord::ClimberId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_training_record_climber")
+                            .from(TrainingRecord::TrainingRecords, TrainingRecord::ClimberId)
+                            .to(Climber::Climbers, Climber::ClimberID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(TrainingRecord::TrainingTemplateId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_training_record_training_template")
+                            .from(TrainingRecord::TrainingRecords, TrainingRecord::TrainingTemplateId)
+                            .to(TrainingTemplate::TrainingTemplates, TrainingTemplate::TrainingTemplateID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(time(TrainingRecord::TotalDuration))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(ExerciseRecord::ExerciseRecords)
+                    .if_not_exists()
+                    .col(pk_auto(ExerciseRecord::ExerciseRecordID))
+                    .col(integer(ExerciseRecord::TrainingRecordId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_exercise_record_training_record")
+                            .from(ExerciseRecord::ExerciseRecords, ExerciseRecord::TrainingRecordId)
+                            .to(TrainingRecord::TrainingRecords, TrainingRecord::TrainingRecordID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(ExerciseRecord::ExerciseTemplateId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_exercise_record_exercise_template")
+                            .from(ExerciseRecord::ExerciseRecords, ExerciseRecord::ExerciseTemplateId)
+                            .to(ExerciseTemplate::ExerciseTemplates, ExerciseTemplate::ExerciseTemplateID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(boolean(ExerciseRecord::WasSuccessful))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(Record::Records)
+                    .if_not_exists()
+                    .col(pk_auto(Record::RecordID))
+                    .col(integer(Record::ExerciseRecordId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_record_exercise_record")
+                            .from(Record::Records, Record::ExerciseRecordId)
+                            .to(ExerciseRecord::ExerciseRecords, ExerciseRecord::ExerciseRecordID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(Record::UsedGripTypeId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_record_grip_type")
+                            .from(Record::Records, Record::UsedGripTypeId)
+                            .to(GripType::GripTypes, GripType::GripTypeID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(time(Record::Duration))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(MeasurementPoint::MeasurementPoints)
+                    .if_not_exists()
+                    .col(timestamp(MeasurementPoint::MeasurementPointTimestamp).primary_key())
+                    .col(integer(MeasurementPoint::RecordId).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_measurement_point_record")
+                            .from(MeasurementPoint::MeasurementPoints, MeasurementPoint::RecordId)
+                            .to(Record::Records, Record::RecordID)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .col(integer(MeasurementPoint::Value))
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().table(MeasurementPoint::MeasurementPoints).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(Record::Records).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(ExerciseRecord::ExerciseRecords).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(TrainingRecord::TrainingRecords).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(TrainingExercise::TrainingExercises).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(ExerciseTemplate::ExerciseTemplates).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(FavouriteTraining::FavouriteTrainings).to_owned())
+            .await?;
+
         manager
             .drop_table(Table::drop().table(TrainingTemplate::TrainingTemplates).to_owned())
             .await?;
@@ -212,6 +440,10 @@ impl MigrationTrait for Migration {
 
         manager
             .drop_table(Table::drop().table(Hangboard::Hangboards).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(FavouriteGym::FavouriteGyms).to_owned())
             .await?;
 
         manager
@@ -338,7 +570,7 @@ enum ExerciseRecord {
 
 #[derive(DeriveIden)]
 enum TrainingRecord {
-    TraiinngRecords,
+    TrainingRecords,
     TrainingRecordID,
     ClimberId,
     TrainingTemplateId,
