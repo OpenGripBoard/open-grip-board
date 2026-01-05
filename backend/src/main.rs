@@ -1,4 +1,5 @@
 use rocket_autodocu::{openapi, openapi_get_routes, swagger_ui::*};
+use backend::controllers::climber::*;
 
 #[macro_use] extern crate rocket;
 
@@ -81,6 +82,7 @@ fn rocket() -> _ {
         .mount("/", routes![hello])
         .mount("/hello", routes![world, mir])
         .mount("/wave", routes![wave])
-        .mount("/", openapi_get_routes![world],)
+        .mount("/climber", routes![get_climber])
+        .mount("/", openapi_get_routes![world, get_climber],)
         .mount("/swagger-ui/", make_swagger_ui(&SwaggerUIConfig {url: "../openapi.json".to_owned(), ..Default::default()}),)
 }
