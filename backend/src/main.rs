@@ -1,3 +1,5 @@
+use rocket_autodocu::{openapi, openapi_get_routes, swagger_ui::*};
+
 #[macro_use] extern crate rocket;
 
 #[cfg(test)] mod tests;
@@ -19,6 +21,7 @@ struct Options<'r> {
 
 // Try visiting:
 //   http://127.0.0.1:8000/hello/world
+#[openapi]
 #[get("/world")]
 fn world() -> &'static str {
     "Hello, world!"
@@ -78,4 +81,6 @@ fn rocket() -> _ {
         .mount("/", routes![hello])
         .mount("/hello", routes![world, mir])
         .mount("/wave", routes![wave])
+        .mount("/", openapi_get_routes![world],)
+        .mount("/swagger-ui/", make_swagger_ui(&SwaggerUIConfig {url: "../openapi.json".to_owned(), ..Default::default()}),)
 }
