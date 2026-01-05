@@ -1,4 +1,4 @@
-use crate::entity::src::climbers;
+use entity::climbers;
 
 pub struct Climber{
     pub id: i32,
