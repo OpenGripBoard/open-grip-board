@@ -11,3 +11,4 @@ sea-orm = { version = "1.1.19", features = ["sqlx-postgres", "runtime-tokio-rust
 thiserror = "2.0.17"
 serde = { version = "1.0.228", features = ["derive"] }
 schemars = "0.8.15" 
+entity ={ path="./entity" }
