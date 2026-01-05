@@ -89,12 +89,6 @@ impl Related<super::favourite_trainings::Entity> for Entity {
     }
 }
 
-impl Related<super::gyms::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Gyms.def()
-    }
-}
-
 impl Related<super::profile_pics::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ProfilePics.def()
@@ -107,9 +101,21 @@ impl Related<super::training_records::Entity> for Entity {
     }
 }
 
+impl Related<super::gyms::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::favourite_gyms::Relation::Gyms.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::favourite_gyms::Relation::Climbers.def().rev())
+    }
+}
+
 impl Related<super::training_templates::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::TrainingTemplates.def()
+        super::favourite_trainings::Relation::TrainingTemplates.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::favourite_trainings::Relation::Climbers.def().rev())
     }
 }
 

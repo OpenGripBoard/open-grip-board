@@ -5,7 +5,9 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "hangboard_grip_types")]
 pub struct Model {
+    #[sea_orm(primary_key, auto_increment = false)]
     pub hangboard_id: i32,
+    #[sea_orm(primary_key, auto_increment = false)]
     pub grip_type_id: i32,
 }
 

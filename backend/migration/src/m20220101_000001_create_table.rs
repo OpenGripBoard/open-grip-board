@@ -131,6 +131,11 @@ impl MigrationTrait for Migration {
                             .to(Gym::Gyms, Gym::GymID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
+                    .primary_key(
+                        Index::create()
+                            .col(FavouriteGym::ClimberID)
+                            .col(FavouriteGym::GymID)
+                    )
                     .to_owned(),
             )
             .await?;
@@ -188,6 +193,11 @@ impl MigrationTrait for Migration {
                             .to(GripType::GripTypes, GripType::GripTypeID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
+                    .primary_key(
+                        Index::create()
+                            .col(HangboardGripType::HangboardID)
+                            .col(HangboardGripType::GripTypeID)
+                    )
                     .to_owned(),
             )
             .await?;
@@ -241,6 +251,11 @@ impl MigrationTrait for Migration {
                             .to(TrainingTemplate::TrainingTemplates, TrainingTemplate::TrainingTemplateID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
+                    .primary_key(
+                        Index::create()
+                            .col(FavouriteTraining::ClimberID)
+                            .col(FavouriteTraining::TrainingTemplateID)
+                    )
                     .to_owned(),
             )
             .await?;
@@ -290,6 +305,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(integer(TrainingExercise::Repetitions).not_null())
                     .col(integer(TrainingExercise::Position).not_null())
+                    .primary_key(
+                        Index::create()
+                            .col(TrainingExercise::TrainingTemplateID)
+                            .col(TrainingExercise::ExerciseTemplateID)
+                    )
                     .to_owned(),
             )
             .await?;

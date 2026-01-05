@@ -39,12 +39,6 @@ pub enum Relation {
     TrainingRecords,
 }
 
-impl Related<super::climbers::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Climbers.def()
-    }
-}
-
 impl Related<super::climbing_grades::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ClimbingGrades.def()
@@ -66,6 +60,32 @@ impl Related<super::training_exercises::Entity> for Entity {
 impl Related<super::training_records::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::TrainingRecords.def()
+    }
+}
+
+impl Related<super::climbers::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::favourite_trainings::Relation::Climbers.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(
+            super::favourite_trainings::Relation::TrainingTemplates
+                .def()
+                .rev(),
+        )
+    }
+}
+
+impl Related<super::exercise_templates::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::training_exercises::Relation::ExerciseTemplates.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(
+            super::training_exercises::Relation::TrainingTemplates
+                .def()
+                .rev(),
+        )
     }
 }
 
