@@ -1,5 +1,5 @@
 # open-grip-board
-A grip strenght measuring board
+A grip strength measuring board
 
 ## Developer setup
 
