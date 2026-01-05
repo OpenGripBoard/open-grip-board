@@ -48,4 +48,17 @@ impl Related<super::training_exercises::Entity> for Entity {
     }
 }
 
+impl Related<super::training_templates::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::training_exercises::Relation::TrainingTemplates.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(
+            super::training_exercises::Relation::ExerciseTemplates
+                .def()
+                .rev(),
+        )
+    }
+}
+
 impl ActiveModelBehavior for ActiveModel {}

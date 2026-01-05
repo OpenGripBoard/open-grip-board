@@ -31,12 +31,6 @@ pub enum Relation {
     Hangboards,
 }
 
-impl Related<super::climbers::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Climbers.def()
-    }
-}
-
 impl Related<super::favourite_gyms::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::FavouriteGyms.def()
@@ -46,6 +40,15 @@ impl Related<super::favourite_gyms::Entity> for Entity {
 impl Related<super::hangboards::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Hangboards.def()
+    }
+}
+
+impl Related<super::climbers::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::favourite_gyms::Relation::Climbers.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::favourite_gyms::Relation::Gyms.def().rev())
     }
 }
 

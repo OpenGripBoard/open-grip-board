@@ -38,4 +38,13 @@ impl Related<super::records::Entity> for Entity {
     }
 }
 
+impl Related<super::hangboards::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::hangboard_grip_types::Relation::Hangboards.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::hangboard_grip_types::Relation::GripTypes.def().rev())
+    }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
