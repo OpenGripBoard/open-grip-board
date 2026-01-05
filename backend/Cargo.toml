@@ -8,3 +8,6 @@ rocket = "0.5.0"
 rocket-autodocu = {version = "0.9.1", features = ["swagger"]}
 dotenvy = "0.15.7"
 sea-orm = { version = "1.1.19", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
+thiserror = "2.0.17"
+serde = { version = "1.0.228", features = ["derive"] }
+schemars = "0.8.15" 

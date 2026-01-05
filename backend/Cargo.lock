@@ -131,7 +131,10 @@ dependencies = [
  "dotenvy",
  "rocket",
  "rocket-autodocu",
+ "schemars",
  "sea-orm",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]
