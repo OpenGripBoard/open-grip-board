@@ -1,6 +1,6 @@
 use crate::structs::{climber::Climber, location::Location};
 
-pub struct CreateGym{
+pub struct NewGym{
     name: String,
     location: Location,
     admin: Climber,
