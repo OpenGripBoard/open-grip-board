@@ -1,6 +1,6 @@
 use sea_orm::DatabaseConnection;
 
-use crate::{errors::errors::RepositoryError, repositories::{climber_repo::ClimberRepo, crud_repo::CrudRepo}, structs::climber::Climber};
+use crate::{commands::create_climber::CreateClimber, errors::errors::RepositoryError, repositories::{climber_repo::ClimberRepo, crud_repo::CrudRepo}, structs::climber::Climber};
 
 pub struct ClimberService{
     repo: ClimberRepo,
@@ -16,5 +16,10 @@ impl ClimberService{
     pub async fn get_climber(&self, climber_id: i32) -> Result<Climber, RepositoryError>{
         let climber_option = self.repo.find_by_id(climber_id).await?;
         climber_option.ok_or(RepositoryError::NotFound)
+    }
+
+    pub async fn create_climber(&self, new_climber: CreateClimber) -> Result<(),RepositoryError>{
+        self.repo.insert(new_climber).await?;
+        Ok(())
     }
 }

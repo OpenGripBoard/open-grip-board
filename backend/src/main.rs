@@ -95,9 +95,9 @@ fn rocket() -> _ {
         .mount("/", routes![hello])
         .mount("/hello", routes![world, mir])
         .mount("/wave", routes![wave])
-        .mount("/climber", routes![get_climber])
+        .mount("/climber", routes![get_climber, post_new_climber])
         .mount("/gym", routes![get_gym])
         .mount("/climbing-grade", routes![get_climbing_grades])
-        .mount("/", openapi_get_routes![world, get_climber, get_gym, get_climbing_grades],)
+        .mount("/", openapi_get_routes![world, get_climber, post_new_climber, get_gym, get_climbing_grades],)
         .mount("/swagger-ui/", make_swagger_ui(&SwaggerUIConfig {url: "../openapi.json".to_owned(), ..Default::default()}),)
 }
