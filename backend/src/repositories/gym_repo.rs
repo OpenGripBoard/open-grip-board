@@ -1,6 +1,6 @@
 use entity::{climbers, gyms};
 use rocket::async_trait;
-use sea_orm::{DatabaseConnection, EntityTrait};
+use sea_orm::{DatabaseConnection, DeleteResult, EntityTrait};
 use crate::repositories::crud_repo::CrudRepo;
 use crate::structs::climber::Climber;
 use crate::structs::gym::Gym;
@@ -33,6 +33,16 @@ impl CrudRepo<Gym, i32> for GymRepo{
             name: gym_model.name,
             location: Location{ longitude: gym_model.location_x, latitude: gym_model.location_y },
             admin: Climber::from(admin_model),
+            hangboards: None
         }))
+    }
+
+    async fn delete_by_id(&self, id: i32) -> Result<(), RepositoryError>{
+        let res: DeleteResult = gyms::Entity::delete_by_id(id).exec(&self.db).await?;
+        if res.rows_affected == 1 {
+            Ok(())
+        } else {
+            Err(RepositoryError::NotFound)
+        }
     }
 }

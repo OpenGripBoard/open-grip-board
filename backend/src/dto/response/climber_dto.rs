@@ -1,4 +1,3 @@
-
 use rocket_autodocu::JsonSchema;
 use serde::{Deserialize, Serialize};
 
