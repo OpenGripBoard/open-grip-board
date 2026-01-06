@@ -1,5 +1,6 @@
+use rocket::fairing::AdHoc;
 use rocket_autodocu::{openapi, openapi_get_routes, swagger_ui::*};
-use backend::controllers::{climber::*, gym::*, climbing_grade_controller::*};
+use backend::{controllers::{climber::*, climbing_grade_controller::*, gym::*}, services::{climber_service::ClimberService, climbing_grade_service::ClimbingGradeService, gym_service::GymService}};
 
 #[macro_use] extern crate rocket;
 
@@ -79,6 +80,18 @@ fn hello(lang: Option<Lang>, opt: Options<'_>) -> String {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
+        .attach(AdHoc::try_on_ignite("Database", |rocket| async {
+                let db = sea_orm::Database::connect(
+                    "postgresql://username:password@127.0.0.1:5432/default_database"
+                ).await.expect("Failed to connect to DB");
+                let climbing_grade_service = ClimbingGradeService::new(db.clone());
+                let climber_service = ClimberService::new(db.clone());
+                let gym_service = GymService::new(db.clone());
+                Ok(rocket
+                    .manage(climbing_grade_service)
+                    .manage(climber_service)
+                    .manage(gym_service))
+            }))
         .mount("/", routes![hello])
         .mount("/hello", routes![world, mir])
         .mount("/wave", routes![wave])

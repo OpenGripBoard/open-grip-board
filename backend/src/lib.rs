@@ -3,5 +3,5 @@ pub mod controllers;
 mod dto;
 mod errors;
 mod repositories;
-mod services;
+pub mod services;
 mod structs;
