@@ -8,6 +8,7 @@ use sea_orm_migration::sea_orm::{
 };
 
 use ::entity::climbing_grades;
+use ::entity::profile_pics;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -62,6 +63,20 @@ impl MigrationTrait for Migration {
         }
 
         println!("ClimbingGrades Table seeded successfully.");
+
+        let seed_data_profile_pic = vec![
+            ("https:://127.0.0.1:8000/assets/default-user.svg")
+        ];
+
+        for uri in seed_data_profile_pic {
+            let model = profile_pics::ActiveModel {
+                url: Set(uri.to_string()),
+                ..Default::default()
+            };
+            model.insert(db).await?;
+        }
+        println!("ProfilePics Table seeded successfully.");
+        
         Ok(())
     }
 
@@ -82,6 +97,18 @@ impl MigrationTrait for Migration {
             .await?;
 
         println!("ClimbingGrades seeded data removed.");
+
+        let profile_pics_to_delete = vec![
+            ("https:://127.0.0.1:8000/assets/default-user.svg")
+        ];
+
+        profile_pics::Entity::delete_many()
+            .filter(profile_pics::Column::Url.is_in(profile_pics_to_delete))
+            .exec(db)
+            .await?;
+
+        println!("ProfilePics seeded data removed.");
+
         Ok(())
     }
 }
