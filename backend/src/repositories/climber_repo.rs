@@ -59,13 +59,12 @@ impl ClimberRepo{
 
 #[async_trait]
 impl CrudRepo<Climber, CreateClimber, i32> for ClimberRepo{
-    async fn find_by_id(&self, id: i32)-> Result<Option<Climber>, RepositoryError>{
+    async fn find_by_id(&self, id: i32)-> Result<Climber, RepositoryError>{
         let climber_model = climbers::Entity::find_by_id(id)
             .one(&self.db)
             .await?
             .ok_or(RepositoryError::NotFound)?;
-        Ok(Some(Climber::from(climber_model)
-        ))
+        Ok(Climber::from(climber_model))
     }
 
     async fn delete_by_id(&self, id: i32) -> Result<(), RepositoryError>{

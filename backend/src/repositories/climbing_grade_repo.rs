@@ -25,12 +25,12 @@ impl ClimbingGradeRepo {
 
 #[async_trait]
 impl CrudRepo<ClimbingGrade, NewClimbingGrade, i32> for ClimbingGradeRepo{
-    async fn find_by_id(&self, id: i32)-> Result<Option<ClimbingGrade>, RepositoryError>{
+    async fn find_by_id(&self, id: i32)-> Result<ClimbingGrade, RepositoryError>{
         let grades_model: Model = climbing_grades::Entity::find_by_id(id)
             .one(&self.db)
             .await?
             .ok_or(RepositoryError::NotFound)?;
-        Ok(Some(ClimbingGrade::from(grades_model)))
+        Ok(ClimbingGrade::from(grades_model))
     }
 
     async fn delete_by_id(&self, id: i32) -> Result<(), RepositoryError>{

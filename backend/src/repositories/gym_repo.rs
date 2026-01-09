@@ -50,7 +50,7 @@ impl GymRepo {
 
 #[async_trait]
 impl CrudRepo<Gym, CreateGym, i32> for GymRepo{
-    async fn find_by_id(&self, id: i32)-> Result<Option<Gym>, RepositoryError>{
+    async fn find_by_id(&self, id: i32)-> Result<Gym, RepositoryError>{
         let gym_model = gyms::Entity::find_by_id(id)
             .one(&self.db)
             .await?
@@ -59,13 +59,13 @@ impl CrudRepo<Gym, CreateGym, i32> for GymRepo{
             .one(&self.db)
             .await?
             .ok_or(RepositoryError::NotFound)?;
-        Ok(Some(Gym{
+        Ok(Gym{
             id: gym_model.gym_id,
             name: gym_model.name,
             location: Location{ longitude: gym_model.location_x, latitude: gym_model.location_y },
             admin: Climber::from(admin_model),
             hangboards: None
-        }))
+        })
     }
 
     async fn delete_by_id(&self, id: i32) -> Result<(), RepositoryError>{
@@ -86,10 +86,7 @@ impl CrudRepo<Gym, CreateGym, i32> for GymRepo{
             ..Default::default()
         };
         let gym_model: gyms::Model = gym.insert(&self.db).await?;
-        match self.find_by_id(gym_model.gym_id).await?{
-            Some(gym)=> Ok(gym),
-            None => Err(RepositoryError::NotFound),
-        }
+        Ok(self.find_by_id(gym_model.gym_id).await?)
     }
 }
 
