@@ -1,0 +1,25 @@
+use entity::climbers;
+
+use crate::structs::{gym::Gym, training_template::TrainingTemplate, training_record::TrainingRecord};
+
+pub struct Climber{
+    pub id: i32,
+    email: String,
+    pub username: String,
+    training_records: Option<Vec<TrainingRecord>>,
+    favourite_trainings: Option<Vec<TrainingTemplate>>,
+    favourite_gyms: Option<Vec<Gym>>
+}
+
+impl From<climbers::Model> for Climber {
+    fn from(climber: climbers::Model) -> Self {
+        Climber {
+            id: climber.climber_id,
+            email: climber.email,
+            username: climber.username,
+            training_records: None,
+            favourite_gyms: None,
+            favourite_trainings: None,
+        }
+    }
+}
