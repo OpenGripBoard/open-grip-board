@@ -1,6 +1,7 @@
 use entity::{climbers, gyms};
 use rocket::async_trait;
 use sea_orm::{DatabaseConnection, DeleteResult, EntityTrait};
+use crate::commands::new_gym::NewGym;
 use crate::repositories::crud_repo::CrudRepo;
 use crate::structs::climber::Climber;
 use crate::structs::gym::Gym;
@@ -18,7 +19,7 @@ impl GymRepo {
 }
 
 #[async_trait]
-impl CrudRepo<Gym, i32> for GymRepo{
+impl CrudRepo<Gym, NewGym, i32> for GymRepo{
     async fn find_by_id(&self, id: i32)-> Result<Option<Gym>, RepositoryError>{
         let gym_model = gyms::Entity::find_by_id(id)
             .one(&self.db)
@@ -44,5 +45,9 @@ impl CrudRepo<Gym, i32> for GymRepo{
         } else {
             Err(RepositoryError::NotFound)
         }
+    }
+
+    async fn insert(&self, new_gym: NewGym) -> Result<Gym, RepositoryError>{
+        Err(RepositoryError::NotFound)
     }
 }
