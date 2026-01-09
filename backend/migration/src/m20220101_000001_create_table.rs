@@ -36,11 +36,11 @@ impl MigrationTrait for Migration {
                     .table(Climber::Climbers)
                     .if_not_exists()
                     .col(pk_auto(Climber::ClimberID))
-                    .col(string(Climber::Email).not_null())
-                    .col(string(Climber::PasswordHash))
+                    .col(string(Climber::Email).not_null().unique_key())
+                    .col(string_null(Climber::PasswordHash))
                     .col(string(Climber::Username).not_null())
-                    .col(string(Climber::Firstname))
-                    .col(string(Climber::Lastname))
+                    .col(string_null(Climber::Firstname))
+                    .col(string_null(Climber::Lastname))
                     .col(integer(Climber::ProfilePicId).not_null())
                     .foreign_key(
                         ForeignKey::create()
@@ -49,9 +49,9 @@ impl MigrationTrait for Migration {
                             .to(ProfilePic::ProfilePics, ProfilePic::ProfilePicID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
-                    .col(integer(Climber::Weight))
-                    .col(date(Climber::BirthDate))
-                    .col(integer(Climber::LeadRpIndoor))
+                    .col(integer_null(Climber::Weight))
+                    .col(date_null(Climber::BirthDate))
+                    .col(integer_null(Climber::LeadRpIndoor))
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_climber_lead_rp_indoor")
@@ -59,7 +59,7 @@ impl MigrationTrait for Migration {
                             .to(ClimbingGrade::ClimbingGrades, ClimbingGrade::ClimbingGradeID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
-                    .col(integer(Climber::LeadRpOutdoor))
+                    .col(integer_null(Climber::LeadRpOutdoor))
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_climber_lead_rp_outdoor")
@@ -67,7 +67,7 @@ impl MigrationTrait for Migration {
                             .to(ClimbingGrade::ClimbingGrades, ClimbingGrade::ClimbingGradeID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
-                    .col(integer(Climber::BoulderRpIndoor))
+                    .col(integer_null(Climber::BoulderRpIndoor))
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_climber_boulder_rp_indoor")
@@ -75,16 +75,16 @@ impl MigrationTrait for Migration {
                             .to(ClimbingGrade::ClimbingGrades, ClimbingGrade::ClimbingGradeID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
-                    .col(integer(Climber::BoulderRpOutdoor))
+                    .col(integer_null(Climber::BoulderRpOutdoor))
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk_climber_boulder_rp_outdoor")
-                            .from(Climber::Climbers, Climber::BoulderRpIndoor)
+                            .from(Climber::Climbers, Climber::BoulderRpOutdoor)
                             .to(ClimbingGrade::ClimbingGrades, ClimbingGrade::ClimbingGradeID)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
-                    .col(integer(Climber::MaxForceRight))
-                    .col(integer(Climber::MaxForceLeft))
+                    .col(integer_null(Climber::MaxForceRight))
+                    .col(integer_null(Climber::MaxForceLeft))
                     .to_owned(),
             )
             .await?;

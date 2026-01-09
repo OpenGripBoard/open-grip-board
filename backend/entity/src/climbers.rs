@@ -8,19 +8,19 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub climber_id: i32,
     pub email: String,
-    pub password_hash: String,
+    pub password_hash: Option<String>,
     pub username: String,
-    pub firstname: String,
-    pub lastname: String,
+    pub firstname: Option<String>,
+    pub lastname: Option<String>,
     pub profile_pic_id: i32,
-    pub weight: i32,
-    pub birth_date: Date,
-    pub lead_rp_indoor: i32,
-    pub lead_rp_outdoor: i32,
-    pub boulder_rp_indoor: i32,
-    pub boulder_rp_outdoor: i32,
-    pub max_force_right: i32,
-    pub max_force_left: i32,
+    pub weight: Option<i32>,
+    pub birth_date: Option<Date>,
+    pub lead_rp_indoor: Option<i32>,
+    pub lead_rp_outdoor: Option<i32>,
+    pub boulder_rp_indoor: Option<i32>,
+    pub boulder_rp_outdoor: Option<i32>,
+    pub max_force_right: Option<i32>,
+    pub max_force_left: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -35,7 +35,7 @@ pub enum Relation {
     ClimbingGrades4,
     #[sea_orm(
         belongs_to = "super::climbing_grades::Entity",
-        from = "Column::BoulderRpIndoor",
+        from = "Column::BoulderRpOutdoor",
         to = "super::climbing_grades::Column::ClimbingGradeId",
         on_update = "NoAction",
         on_delete = "Cascade"
