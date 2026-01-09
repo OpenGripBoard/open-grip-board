@@ -1,4 +1,4 @@
-use rocket::fairing::AdHoc;
+use rocket::{fairing::AdHoc, fs::FileServer};
 use rocket_autodocu::{openapi, openapi_get_routes, swagger_ui::*};
 use backend::{controllers::{climber::*, climbing_grade_controller::*, gym::*}, services::{climber_service::ClimberService, climbing_grade_service::ClimbingGradeService, gym_service::GymService}};
 
@@ -100,4 +100,5 @@ fn rocket() -> _ {
         .mount("/climbing-grade", routes![get_climbing_grades])
         .mount("/", openapi_get_routes![world, get_climber, post_new_climber, get_gym, get_climbing_grades],)
         .mount("/swagger-ui/", make_swagger_ui(&SwaggerUIConfig {url: "../openapi.json".to_owned(), ..Default::default()}),)
+        .mount("/assets", FileServer::from("./assets"))
 }
