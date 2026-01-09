@@ -5,3 +5,4 @@ mod errors;
 mod repositories;
 pub mod services;
 mod structs;
+mod utilities;
