@@ -29,10 +29,10 @@ fn rocket() -> _ {
                     .manage(gym_service))
             }))
         .mount("/", routes![get_root])
-        .mount("/climber", routes![get_climber, post_new_climber])
-        .mount("/gym", routes![get_gym])
+        .mount("/climber", routes![get_climber, post_new_climber, post_climber_login])
+        .mount("/gym", routes![get_gym, get_gyms, post_new_gym])
         .mount("/climbing-grade", routes![get_climbing_grades])
-        .mount("/", openapi_get_routes![get_climber, post_new_climber, get_gym, get_climbing_grades],)
+        .mount("/", openapi_get_routes![get_climber, post_new_climber, post_climber_login, get_gym, get_gyms, post_new_gym, get_climbing_grades],)
         .mount("/swagger-ui/", make_swagger_ui(&SwaggerUIConfig {url: "../openapi.json".to_owned(), ..Default::default()}),)
         .mount("/assets", FileServer::from("./assets"))
 }
