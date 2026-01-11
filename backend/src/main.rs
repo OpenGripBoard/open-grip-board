@@ -1,6 +1,6 @@
 use rocket::{fairing::AdHoc, fs::FileServer, response::Redirect};
 use rocket_autodocu::{openapi_get_routes, swagger_ui::*};
-use backend::{controllers::{climber::*, climbing_grade_controller::*, gym::*}, services::{climber_service::ClimberService, climbing_grade_service::ClimbingGradeService, gym_service::GymService}};
+use backend::{controllers::{climber::*, climbing_grade_controller::*, gym::*, hangboard_controller::get_hangboard_live_data}, services::{climber_service::ClimberService, climbing_grade_service::ClimbingGradeService, gym_service::GymService, mqtt_service::MqttService}};
 
 #[macro_use] extern crate rocket;
 
@@ -23,15 +23,18 @@ fn rocket() -> _ {
                 let climbing_grade_service = ClimbingGradeService::new(db.clone());
                 let climber_service = ClimberService::new(db.clone());
                 let gym_service = GymService::new(db.clone());
+                let mqtt_service = MqttService::new();
                 Ok(rocket
                     .manage(climbing_grade_service)
                     .manage(climber_service)
-                    .manage(gym_service))
+                    .manage(gym_service)
+                    .manage(mqtt_service))
             }))
         .mount("/", routes![get_root])
         .mount("/climber", routes![get_climber, post_new_climber, post_climber_login, patch_climber_favourite_gyms])
         .mount("/gym", routes![get_gym, get_gyms, post_new_gym])
         .mount("/climbing-grade", routes![get_climbing_grades, create_climbing_grade, delete_climbing_grade])
+        .mount("/hangboard", routes![get_hangboard_live_data])
         .mount("/", openapi_get_routes![get_climber, post_new_climber, post_climber_login, patch_climber_favourite_gyms, get_gym, get_gyms, post_new_gym, get_climbing_grades, create_climbing_grade, delete_climbing_grade],)
         .mount("/swagger-ui/", make_swagger_ui(&SwaggerUIConfig {url: "../openapi.json".to_owned(), ..Default::default()}),)
         .mount("/assets", FileServer::from("./assets"))

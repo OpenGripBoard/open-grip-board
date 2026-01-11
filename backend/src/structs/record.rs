@@ -2,10 +2,10 @@ use entity::{grip_types, measurement_points, records};
 use sea_orm::prelude::Time;
 
 
-use crate::structs::{grip_type::GripType, measurement_point::MeasurementPoint};
+use crate::{structs::{grip_type::GripType, measurement_point::MeasurementPoint}, traits::observer::Observer};
 
 pub struct Record{
-    id:i32,
+    pub id:i32,
     used_grip_type: GripType,
     measurement_points: Vec<MeasurementPoint>,
     duration: Time,
@@ -21,5 +21,11 @@ impl From<(records::Model, Vec<measurement_points::Model>, grip_types::Model)> f
             measurement_points: measurement_points, 
             duration: record.duration,
         }
+    }
+}
+
+impl Observer for Record{
+    fn update (&mut self, measurement_point: MeasurementPoint) {
+        self.measurement_points.push(measurement_point);
     }
 }

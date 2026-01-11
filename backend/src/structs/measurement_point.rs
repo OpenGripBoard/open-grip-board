@@ -1,6 +1,7 @@
 use entity::measurement_points;
 use sea_orm::prelude::DateTime;
 
+#[derive(Clone)]
 pub struct MeasurementPoint{
     pub timestamp: DateTime,
     pub value: i32,

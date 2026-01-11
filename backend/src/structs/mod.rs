@@ -7,6 +7,8 @@ pub mod gym;
 mod hangboard;
 pub mod location;
 pub mod measurement_point;
+pub mod mqtt_message_subscription;
+pub mod mqtt_observer;
 pub mod record;
 mod training_record;
 mod training_template;

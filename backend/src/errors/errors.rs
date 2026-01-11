@@ -27,3 +27,9 @@ pub enum AuthentificationError {
     #[error("Internal processing failed")]
     InternalError,
 }
+
+#[derive(Debug, thiserror::Error)]
+pub enum MqttError{
+    #[error("not found")]
+    NotFound,
+}
