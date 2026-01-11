@@ -23,6 +23,10 @@ impl ClimbingGradeService {
     }
 
     pub async fn delete_climbing_grade(&self, climbing_grade: ClimbingGrade) -> Result<(), RepositoryError>{
-        self.repo.delete_by_id(climbing_grade.id).await
+        self.delete_climbing_grade_by_id(climbing_grade.id).await
+    }
+
+    pub async fn delete_climbing_grade_by_id(&self, climbing_grade_id: i32) -> Result<(), RepositoryError>{
+        self.repo.delete_by_id(climbing_grade_id).await
     }
 }
