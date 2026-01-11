@@ -3,6 +3,7 @@ use crate::dto::request::new_climber_dto::NewClimberDto;
 pub struct CreateClimber{
     pub email: String,
     pub username: String,
+    pub password: String,
 }
 
 impl From<NewClimberDto> for CreateClimber {
@@ -10,6 +11,7 @@ impl From<NewClimberDto> for CreateClimber {
         CreateClimber { 
             email: climber.email, 
             username: climber.username,
+            password: climber.password,
         }
     }
 }

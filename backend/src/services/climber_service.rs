@@ -1,6 +1,6 @@
 use sea_orm::DatabaseConnection;
 
-use crate::{commands::create_climber::CreateClimber, errors::errors::RepositoryError, repositories::{climber_repo::ClimberRepo, crud_repo::CrudRepo}, structs::climber::Climber};
+use crate::{commands::create_climber::CreateClimber, dto::request::login_request_dto::LoginRequestDto, errors::errors::{AuthentificationError, RepositoryError}, repositories::{climber_repo::ClimberRepo, crud_repo::CrudRepo}, structs::climber::Climber};
 
 pub struct ClimberService{
     repo: ClimberRepo,
@@ -21,5 +21,12 @@ impl ClimberService{
     pub async fn create_climber(&self, new_climber: CreateClimber) -> Result<(),RepositoryError>{
         self.repo.insert(new_climber).await?;
         Ok(())
+    }
+
+    pub async fn authenticate_climber(&self, login_request_dto: LoginRequestDto) -> Result<Climber, AuthentificationError>{
+        match self.repo.authenticate_climber_password(login_request_dto.email, login_request_dto.password).await?{
+            Some(climber) => {Ok(climber)}
+            None => {Err(AuthentificationError::AuthError)}
+        }
     }
 }
