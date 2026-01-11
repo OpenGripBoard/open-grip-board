@@ -1,4 +1,4 @@
-use entity::climbers;
+use entity::{climbers, favourite_gyms};
 use rocket::async_trait;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, DeleteResult, EntityTrait, Set, ColumnTrait, QueryFilter};
 use crate::commands::create_climber::CreateClimber;
@@ -54,6 +54,18 @@ impl ClimberRepo{
             .ok_or(RepositoryError::NotFound)?;
         Ok(Climber::from(climber_model)
         )
+    }
+
+    pub async fn insert_favourite_gyms_relation(&self, climber_id: i32, gym_id: i32)-> Result<(),RepositoryError>{
+        let favourite_gyms = favourite_gyms::ActiveModel { climber_id: Set(climber_id), gym_id: Set(gym_id) };
+        favourite_gyms.insert(&self.db).await?;
+        Ok(())
+    }
+
+    pub async fn delete_favourite_gyms_relation(&self, climber_id: i32, gym_id: i32)-> Result<(),RepositoryError>{
+        let favourite_gyms = favourite_gyms::ActiveModel { climber_id: Set(climber_id), gym_id: Set(gym_id) };
+        favourite_gyms.delete(&self.db).await?;
+        Ok(())
     }
 }
 
