@@ -26,7 +26,7 @@ services:
     build: ./backend
     container_name: open_grip_board_backend
     ports:
-      - 80:8000
+      - 8000:8000
     environment:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
