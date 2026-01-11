@@ -1,2 +1,20 @@
-FROM alpine:latest
-CMD ["echo", "Hello, world!"]
+FROM rust:latest AS build-stage
+WORKDIR /backend
+RUN apt-get update && apt-get install -y musl-tools
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+COPY entity ./entity
+RUN cargo fetch
+RUN rustup target add x86_64-unknown-linux-musl \
+    && cargo build --release --target x86_64-unknown-linux-musl
+
+
+FROM scratch AS final-stage
+ENV ROCKET_ADDRESS=0.0.0.0
+ENV ROCKET_PORT=8000
+COPY --from=build-stage \
+  /backend/target/x86_64-unknown-linux-musl/release/backend \
+  /backend
+COPY assets /assets
+EXPOSE 8000
+CMD ["/backend"]
