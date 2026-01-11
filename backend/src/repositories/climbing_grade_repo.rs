@@ -1,7 +1,8 @@
 use entity::climbing_grades::Model;
 use entity::climbing_grades;
 use rocket::async_trait;
-use sea_orm::{DatabaseConnection, DeleteResult, EntityTrait};
+use sea_orm::ActiveValue::Set;
+use sea_orm::{DatabaseConnection, DeleteResult, EntityTrait, ActiveModelTrait};
 use crate::commands::new_climbing_grade::NewClimbingGrade;
 use crate::errors::errors::RepositoryError;
 use crate::repositories::crud_repo::CrudRepo;
@@ -43,6 +44,13 @@ impl CrudRepo<ClimbingGrade, NewClimbingGrade, i32> for ClimbingGradeRepo{
     }
 
     async fn insert(&self, new_climbing_grade: NewClimbingGrade) -> Result<ClimbingGrade, RepositoryError>{
-        Err(RepositoryError::NotFound)
+        let climbing_grade = climbing_grades::ActiveModel {
+            name: Set(new_climbing_grade.name),
+            grade_context: Set(new_climbing_grade.grade_context),
+            numverical_value: Set(new_climbing_grade.numerical_value),
+            ..Default::default()
+        };
+        let climbing_grade: climbing_grades::Model = climbing_grade.insert(&self.db).await?;
+        Ok(ClimbingGrade::from(climbing_grade))
     }
 }
