@@ -1,3 +1,4 @@
 pub mod create_climber;
-pub mod new_gym;
-pub mod new_climbing_grade;
+pub mod create_gym;
+pub mod create_climbing_grade;
+pub mod create_record;

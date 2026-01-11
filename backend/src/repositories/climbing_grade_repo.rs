@@ -1,8 +1,9 @@
 use entity::climbing_grades::Model;
 use entity::climbing_grades;
 use rocket::async_trait;
-use sea_orm::{DatabaseConnection, DeleteResult, EntityTrait};
-use crate::commands::new_climbing_grade::NewClimbingGrade;
+use sea_orm::ActiveValue::Set;
+use sea_orm::{DatabaseConnection, DeleteResult, EntityTrait, ActiveModelTrait};
+use crate::commands::create_climbing_grade::CreateClimbingGrade;
 use crate::errors::errors::RepositoryError;
 use crate::repositories::crud_repo::CrudRepo;
 use crate::structs::climbing_grade::ClimbingGrade;
@@ -24,13 +25,13 @@ impl ClimbingGradeRepo {
 }
 
 #[async_trait]
-impl CrudRepo<ClimbingGrade, NewClimbingGrade, i32> for ClimbingGradeRepo{
-    async fn find_by_id(&self, id: i32)-> Result<Option<ClimbingGrade>, RepositoryError>{
+impl CrudRepo<ClimbingGrade, CreateClimbingGrade, i32> for ClimbingGradeRepo{
+    async fn find_by_id(&self, id: i32)-> Result<ClimbingGrade, RepositoryError>{
         let grades_model: Model = climbing_grades::Entity::find_by_id(id)
             .one(&self.db)
             .await?
             .ok_or(RepositoryError::NotFound)?;
-        Ok(Some(ClimbingGrade::from(grades_model)))
+        Ok(ClimbingGrade::from(grades_model))
     }
 
     async fn delete_by_id(&self, id: i32) -> Result<(), RepositoryError>{
@@ -42,7 +43,14 @@ impl CrudRepo<ClimbingGrade, NewClimbingGrade, i32> for ClimbingGradeRepo{
         }
     }
 
-    async fn insert(&self, new_climbing_grade: NewClimbingGrade) -> Result<ClimbingGrade, RepositoryError>{
-        Err(RepositoryError::NotFound)
+    async fn insert(&self, new_climbing_grade: CreateClimbingGrade) -> Result<ClimbingGrade, RepositoryError>{
+        let climbing_grade = climbing_grades::ActiveModel {
+            name: Set(new_climbing_grade.name),
+            grade_context: Set(new_climbing_grade.grade_context),
+            numverical_value: Set(new_climbing_grade.numerical_value),
+            ..Default::default()
+        };
+        let climbing_grade: climbing_grades::Model = climbing_grade.insert(&self.db).await?;
+        Ok(ClimbingGrade::from(climbing_grade))
     }
 }

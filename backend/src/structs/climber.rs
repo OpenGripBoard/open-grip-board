@@ -4,11 +4,11 @@ use crate::structs::{gym::Gym, training_template::TrainingTemplate, training_rec
 
 pub struct Climber{
     pub id: i32,
-    email: String,
+    pub email: String,
     pub username: String,
-    training_records: Option<Vec<TrainingRecord>>,
-    favourite_trainings: Option<Vec<TrainingTemplate>>,
-    favourite_gyms: Option<Vec<Gym>>
+    pub training_records: Option<Vec<TrainingRecord>>,
+    pub favourite_trainings: Option<Vec<TrainingTemplate>>,
+    pub favourite_gyms: Option<Vec<Gym>>
 }
 
 impl From<climbers::Model> for Climber {

@@ -1,4 +1,15 @@
+use entity::grip_types;
+
 pub struct GripType{
-    id: i32,
+    pub id: i32,
     name: String
+}
+
+impl From<grip_types::Model> for GripType {
+    fn from(grip_type: grip_types::Model) -> Self {
+        GripType { 
+            id: grip_type.grip_type_id, 
+            name: grip_type.name,
+        } 
+    }
 }
