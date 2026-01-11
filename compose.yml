@@ -2,6 +2,7 @@ services:
   
   database:
     image: "postgres:latest"
+    container_name: open_grip_board_database
     ports:
       - 5432:5432
     environment:
@@ -10,10 +11,24 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./db-data/:/var/lib/postgresql
-  
+
+  broker:
+    image: "eclipse-mosquitto:latest"
+    container_name: open_grip_board_broker
+    ports:
+      - 1883:1883
+    volumes:
+      - ./configs/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./broker-data/data:/mosquitto/data
+      - ./broker-data/log:/mosquitto/log
+
   backend:
     build: ./backend
+    container_name: open_grip_board_backend
     ports:
       - 80:8000
     environment:
       DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - database
+      - broker
