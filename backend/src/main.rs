@@ -1,3 +1,5 @@
+use std::env;
+
 use rocket::{fairing::AdHoc, fs::FileServer, response::Redirect};
 use rocket_autodocu::{openapi_get_routes, swagger_ui::*};
 use backend::{controllers::{climber::*, climbing_grade_controller::*, gym::*, hangboard_controller::get_hangboard_live_data}, services::{climber_service::ClimberService, climbing_grade_service::ClimbingGradeService, gym_service::GymService, mqtt_service::MqttService}};
@@ -17,9 +19,8 @@ fn get_root()-> Redirect{
 fn rocket() -> _ {
     rocket::build()
         .attach(AdHoc::try_on_ignite("Database", |rocket| async {
-                let db = sea_orm::Database::connect(
-                    "postgresql://username:password@127.0.0.1:5432/default_database"
-                ).await.expect("Failed to connect to DB");
+                let db_url = env::var("DATABASE_URL").unwrap();
+                let db = sea_orm::Database::connect(db_url).await.expect("Failed to connect to DB");
                 let climbing_grade_service = ClimbingGradeService::new(db.clone());
                 let climber_service = ClimberService::new(db.clone());
                 let gym_service = GymService::new(db.clone());
