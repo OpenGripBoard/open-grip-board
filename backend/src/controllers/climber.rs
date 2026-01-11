@@ -1,7 +1,7 @@
-use rocket::{State, get, http::Status, post, serde::json::Json};
+use rocket::{State, get, http::Status, patch, post, serde::json::Json};
 use rocket_autodocu::openapi;
 
-use crate::{commands::create_climber::CreateClimber, dto::{request::{login_request_dto::LoginRequestDto, new_climber_dto::NewClimberDto}, response::climber_dto::ClimberDto}, services::climber_service::ClimberService, structs::climber::Climber};
+use crate::{commands::create_climber::CreateClimber, dto::{request::{login_request_dto::LoginRequestDto, new_climber_dto::NewClimberDto, patch_climber_dto::PatchClimberFavouriteGymDto}, response::climber_dto::ClimberDto}, services::{climber_service::ClimberService, gym_service::GymService}, structs::climber::Climber};
 
 #[openapi]
 #[get("/climber/<climber_id>")]
@@ -28,4 +28,13 @@ pub async fn post_climber_login(service: &State<ClimberService>, login_request_d
     let climber = service.authenticate_climber(login_request).await.map_err(|_| Status::Forbidden)?;
     let dto = ClimberDto::from(climber);
     Ok(Json(dto))
+}
+
+#[openapi]
+#[patch("/climber/<climber_id>/favourite-gyms", format="json", data ="<climber_patches>")]
+pub async fn patch_climber_favourite_gyms(service: &State<ClimberService>, climber_id: i32, climber_patches: Json<PatchClimberFavouriteGymDto>, gym_service: &State<GymService>) -> Status{
+    match service.patch_climber_favourite_gyms(climber_id, climber_patches.into_inner(), gym_service).await{
+        Ok(_) => Status::Ok,
+        Err(_) => Status::InternalServerError,
+    }
 }

@@ -14,8 +14,7 @@ impl GymService {
     }
 
     pub async fn get_gym(&self, gym_id: i32) -> Result<Gym, RepositoryError>{
-        let gym_option = self.repo.find_by_id(gym_id).await?;
-        gym_option.ok_or(RepositoryError::NotFound)
+        Ok(self.repo.find_by_id(gym_id).await?)
     }
 
     pub async fn get_all_gyms(&self) -> Result<Vec<Gym>,RepositoryError>{
