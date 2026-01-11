@@ -8,7 +8,7 @@ pub struct MeasurementPointRepo{
 }
 
 impl MeasurementPointRepo {
-    async fn insert_one(&self, new_point: MeasurementPoint, record_id: i32)-> Result<(), RepositoryError>{
+    pub async fn insert_one(&self, new_point: MeasurementPoint, record_id: i32)-> Result<(), RepositoryError>{
         let point = measurement_points::ActiveModel{
             measurement_point_timestamp: Set(new_point.timestamp),
             value: Set(new_point.value),
@@ -19,7 +19,7 @@ impl MeasurementPointRepo {
         Ok(())
     }
 
-    async fn insert_many(&self, new_points: Vec<MeasurementPoint>, record_id: i32)-> Result<(), RepositoryError>{
+    pub async fn insert_many(&self, new_points: Vec<MeasurementPoint>, record_id: i32)-> Result<(), RepositoryError>{
         let points: Vec<ActiveModel> = new_points.into_iter().map(|new_point| {measurement_points::ActiveModel{
             measurement_point_timestamp: Set(new_point.timestamp),
             value: Set(new_point.value),
