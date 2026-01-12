@@ -1,8 +1,4 @@
-
-use std::sync::Mutex;
-
-use rocket::{State, get, http::Status, post, response::stream::{Event, EventStream}};
-use rocket_autodocu::openapi;
+use rocket::{State, get, response::stream::{Event, EventStream}};
 
 use crate::services::mqtt_service::MqttService;
 

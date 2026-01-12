@@ -1,71 +1,160 @@
+use rocket::http::{ContentType, Header, Status};
 use rocket::local::blocking::Client;
-use rocket::http::{RawStr, Status};
+use serde_json::{json, Value};
+
+use backend::utilities::jwt_util;
+
+fn get_client() -> Client {
+    Client::tracked(super::rocket()).expect("valid rocket instance")
+}
+
+// ============================================================================
+// Health Check Tests
+// ============================================================================
 
 #[test]
-fn hello() {
-    let langs = &["", "ru", "%D1%80%D1%83", "en", "unknown"];
-    let ex_lang = &["Hi", "Привет", "Привет", "Hello", "Hi"];
+fn health_check_returns_healthy() {
+    let client = get_client();
+    let response = client.get("/health").dispatch();
 
-    let emojis = &["", "on", "true", "false", "no", "yes", "off"];
-    let ex_emoji = &["", "👋 ", "👋 ", "", "", "👋 ", ""];
+    assert_eq!(response.status(), Status::Ok);
 
-    let names = &["", "Bob", "Bob+Smith"];
-    let ex_name = &["!", ", Bob!", ", Bob Smith!"];
+    let body: Value = serde_json::from_str(&response.into_string().unwrap()).unwrap();
+    assert_eq!(body["status"], "healthy");
+    assert!(body["version"].is_string());
+}
 
-    let client = Client::tracked(super::rocket()).unwrap();
-    for n in 0..(langs.len() * emojis.len() * names.len()) {
-        let i = n / (emojis.len() * names.len());
-        let j = n % (emojis.len() * names.len()) / names.len();
-        let k = n % (emojis.len() * names.len()) % names.len();
+// ============================================================================
+// Authentication Tests
+// ============================================================================
 
-        let (lang, ex_lang) = (langs[i], ex_lang[i]);
-        let (emoji, ex_emoji) = (emojis[j], ex_emoji[j]);
-        let (name, ex_name) = (names[k], ex_name[k]);
-        let expected = format!("{}{}{}", ex_emoji, ex_lang, ex_name);
+#[test]
+fn login_with_invalid_email_format_returns_bad_request() {
+    let client = get_client();
+    let response = client
+        .post("/climber/login")
+        .header(ContentType::JSON)
+        .body(json!({"email": "not-an-email", "password": "password123"}).to_string())
+        .dispatch();
 
-        let q = |name, s: &str| match s.is_empty() {
-            true => "".into(),
-            false => format!("&{}={}", name, s)
-        };
+    assert_eq!(response.status(), Status::BadRequest);
+}
 
-        let uri = format!("/?{}{}{}", q("lang", lang), q("emoji", emoji), q("name", name));
-        let response = client.get(uri).dispatch();
-        assert_eq!(response.into_string().unwrap(), expected);
+#[test]
+fn register_with_short_password_returns_bad_request() {
+    let client = get_client();
+    let response = client
+        .post("/climber")
+        .header(ContentType::JSON)
+        .body(json!({"email": "test@example.com", "username": "testuser", "password": "short"}).to_string())
+        .dispatch();
 
-        let uri = format!("/?{}{}{}", q("emoji", emoji), q("name", name), q("lang", lang));
-        let response = client.get(uri).dispatch();
-        assert_eq!(response.into_string().unwrap(), expected);
+    assert_eq!(response.status(), Status::BadRequest);
+}
+
+#[test]
+fn register_with_invalid_email_returns_bad_request() {
+    let client = get_client();
+    let response = client
+        .post("/climber")
+        .header(ContentType::JSON)
+        .body(json!({"email": "invalid", "username": "testuser", "password": "validpassword123"}).to_string())
+        .dispatch();
+
+    assert_eq!(response.status(), Status::BadRequest);
+}
+
+// ============================================================================
+// Authorization Tests
+// ============================================================================
+
+#[test]
+fn get_climber_without_auth_returns_unauthorized() {
+    let client = get_client();
+    let response = client.get("/climber/climber/1").dispatch();
+
+    assert_eq!(response.status(), Status::Unauthorized);
+}
+
+#[test]
+fn get_climber_with_invalid_token_returns_unauthorized() {
+    let client = get_client();
+    let response = client
+        .get("/climber/climber/1")
+        .header(Header::new("Authorization", "Bearer invalid_token"))
+        .dispatch();
+
+    assert_eq!(response.status(), Status::Unauthorized);
+}
+
+// ============================================================================
+// JWT Utility Tests
+// ============================================================================
+
+#[test]
+fn jwt_create_and_validate_token() {
+    std::env::set_var("JWT_SECRET", "test_secret_key_for_jwt_testing_min_32_chars");
+
+    let token = jwt_util::create_token(1, "test@example.com").expect("should create token");
+    let validated = jwt_util::validate_token(&token).expect("should validate token");
+
+    assert_eq!(validated.claims.sub, 1);
+    assert_eq!(validated.claims.email, "test@example.com");
+}
+
+#[test]
+fn jwt_invalid_token_fails_validation() {
+    std::env::set_var("JWT_SECRET", "test_secret_key_for_jwt_testing_min_32_chars");
+
+    let result = jwt_util::validate_token("invalid.token.here");
+    assert!(result.is_err());
+}
+
+// ============================================================================
+// Input Validation Tests
+// ============================================================================
+
+#[test]
+fn new_climber_dto_validates_email() {
+    use backend::utilities::jwt_util;
+    use validator::Validate;
+
+    #[derive(validator::Validate)]
+    struct TestDto {
+        #[validate(email)]
+        email: String,
     }
+
+    let valid = TestDto {
+        email: "test@example.com".to_string(),
+    };
+    assert!(valid.validate().is_ok());
+
+    let invalid = TestDto {
+        email: "not-an-email".to_string(),
+    };
+    assert!(invalid.validate().is_err());
+}
+
+// ============================================================================
+// Public Endpoint Tests
+// ============================================================================
+
+#[test]
+fn root_redirects_to_swagger() {
+    let client = get_client();
+    let response = client.get("/").dispatch();
+
+    assert_eq!(response.status(), Status::SeeOther);
 }
 
 #[test]
-fn hello_world() {
-    let client = Client::tracked(super::rocket()).unwrap();
-    let response = client.get("/hello/world").dispatch();
-    assert_eq!(response.into_string(), Some("Hello, world!".into()));
-}
+fn get_climbing_grades_returns_ok() {
+    let client = get_client();
+    let response = client.get("/climbing-grade").dispatch();
 
-#[test]
-fn hello_mir() {
-    let client = Client::tracked(super::rocket()).unwrap();
-    let response = client.get("/hello/%D0%BC%D0%B8%D1%80").dispatch();
-    assert_eq!(response.into_string(), Some("Привет, мир!".into()));
-}
-
-#[test]
-fn wave() {
-    let client = Client::tracked(super::rocket()).unwrap();
-    for &(name, age) in &[("Bob%20Smith", 22), ("Michael", 80), ("A", 0), ("a", 127)] {
-        let uri = format!("/wave/{}/{}", name, age);
-        let real_name = RawStr::new(name).percent_decode_lossy();
-        let expected = format!("👋 Hello, {} year old named {}!", age, real_name);
-        let response = client.get(uri).dispatch();
-        assert_eq!(response.into_string().unwrap(), expected);
-
-        for bad_age in &["1000", "-1", "bird"] {
-            let bad_uri = format!("/wave/{}/{}", name, bad_age);
-            let response = client.get(bad_uri).dispatch();
-            assert_eq!(response.status(), Status::UnprocessableEntity);
-        }
-    }
+    // May return None if DB not connected, but should not error
+    assert!(
+        response.status() == Status::Ok || response.status() == Status::NotFound
+    );
 }

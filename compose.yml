@@ -1,5 +1,5 @@
 services:
-  
+
   database:
     image: "postgres:latest"
     container_name: open_grip_board_database
@@ -11,16 +11,28 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./db-data/:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   broker:
     image: "eclipse-mosquitto:latest"
     container_name: open_grip_board_broker
     ports:
       - 1883:1883
+      - 8083:8083
     volumes:
       - ./configs/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./configs/passwd:/mosquitto/config/passwd
       - ./broker-data/data:/mosquitto/data
       - ./broker-data/log:/mosquitto/log
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-u", "${MQTT_USERNAME}", "-P", "${MQTT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   backend:
     build: ./backend
@@ -29,6 +41,14 @@ services:
       - 8000:8000
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      MQTT_HOST: broker
+      MQTT_PORT: 1883
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      RUST_LOG: info
     depends_on:
-      - database
-      - broker
+      database:
+        condition: service_healthy
+      broker:
+        condition: service_started

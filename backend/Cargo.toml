@@ -4,13 +4,24 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rocket = "0.5.0"
-rocket-autodocu = {version = "0.9.1", features = ["swagger"]}
+rocket = { version = "0.5.0", features = ["json"] }
+rocket-autodocu = { version = "0.9.1", features = ["swagger"] }
+rocket_cors = "0.6.0"
 dotenvy = "0.15.7"
 sea-orm = { version = "1.1.19", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
 thiserror = "2.0.17"
 serde = { version = "1.0.228", features = ["derive"] }
-schemars = "0.8.15" 
-entity ={ path="./entity" }
+serde_json = "1.0"
+schemars = "0.8.15"
+entity = { path = "./entity" }
 argon2 = "0.5.3"
 rumqttc = "0.25.1"
+jsonwebtoken = "9"
+chrono = { version = "0.4", features = ["serde"] }
+validator = { version = "0.18", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+governor = "0.6"
+
+[dev-dependencies]
+serde_json = "1.0"
