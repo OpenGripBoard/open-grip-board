@@ -3,3 +3,4 @@
 db-data/
 broker-data/
 .env
+configs/passwd

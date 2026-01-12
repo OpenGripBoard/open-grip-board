@@ -1,20 +1,17 @@
-FROM rust:latest AS build-stage
+FROM rust:bookworm AS build-stage
 WORKDIR /backend
-RUN apt-get update && apt-get install -y musl-tools
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 COPY entity ./entity
 RUN cargo fetch
-RUN rustup target add x86_64-unknown-linux-musl \
-    && cargo build --release --target x86_64-unknown-linux-musl
+RUN cargo build --release
 
 
-FROM scratch AS final-stage
+FROM debian:bookworm-slim AS final-stage
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 ENV ROCKET_ADDRESS=0.0.0.0
 ENV ROCKET_PORT=8000
-COPY --from=build-stage \
-  /backend/target/x86_64-unknown-linux-musl/release/backend \
-  /backend
+COPY --from=build-stage /backend/target/release/backend /backend
 COPY assets /assets
 EXPOSE 8000
 CMD ["/backend"]
