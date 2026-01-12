@@ -1,15 +1,15 @@
 use std::env;
 
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
+use jsonwebtoken::{DecodingKey, EncodingKey, Header, TokenData, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub sub: i32,        // climber_id
+    pub sub: i32, // climber_id
     pub email: String,
-    pub exp: i64,        // expiration time
-    pub iat: i64,        // issued at
+    pub exp: i64, // expiration time
+    pub iat: i64, // issued at
 }
 
 #[derive(Debug)]

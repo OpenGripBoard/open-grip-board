@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use rumqttc::{AsyncClient, Event, Incoming, MqttOptions, QoS};
 
-use crate::errors::errors::MqttError;
+use crate::errors::MqttError;
 use crate::structs::mqtt_message_subscription::MqttMessageSubscription;
 
 pub struct MqttService {
@@ -13,6 +13,12 @@ pub struct MqttService {
     mqtt_port: u16,
     mqtt_username: Option<String>,
     mqtt_password: Option<String>,
+}
+
+impl Default for MqttService {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl MqttService {
@@ -63,14 +69,15 @@ impl MqttService {
         while let Ok(event) = eventloop.poll().await {
             if let Event::Incoming(Incoming::Publish(publish)) = event {
                 let payload = String::from_utf8_lossy(&publish.payload).to_string();
-                self.store_message(topic.to_string(), payload.parse().unwrap());
+                let _ = self.store_message(topic.to_string(), payload.parse().unwrap());
             }
         }
         Ok(())
     }
 
     fn initialize_mqtt_client(&self) -> MqttOptions {
-        let mut mqttoptions = MqttOptions::new("gripboard-backend", &self.mqtt_host, self.mqtt_port);
+        let mut mqttoptions =
+            MqttOptions::new("gripboard-backend", &self.mqtt_host, self.mqtt_port);
         mqttoptions.set_keep_alive(Duration::from_secs(5));
 
         if let (Some(username), Some(password)) = (&self.mqtt_username, &self.mqtt_password) {
@@ -80,6 +87,3 @@ impl MqttService {
         mqttoptions
     }
 }
-
-
-

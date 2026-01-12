@@ -1,6 +1,6 @@
 use rocket::http::{ContentType, Header, Status};
 use rocket::local::blocking::Client;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use backend::utilities::jwt_util;
 
@@ -46,7 +46,10 @@ fn register_with_short_password_returns_bad_request() {
     let response = client
         .post("/climber")
         .header(ContentType::JSON)
-        .body(json!({"email": "test@example.com", "username": "testuser", "password": "short"}).to_string())
+        .body(
+            json!({"email": "test@example.com", "username": "testuser", "password": "short"})
+                .to_string(),
+        )
         .dispatch();
 
     assert_eq!(response.status(), Status::BadRequest);
@@ -58,7 +61,10 @@ fn register_with_invalid_email_returns_bad_request() {
     let response = client
         .post("/climber")
         .header(ContentType::JSON)
-        .body(json!({"email": "invalid", "username": "testuser", "password": "validpassword123"}).to_string())
+        .body(
+            json!({"email": "invalid", "username": "testuser", "password": "validpassword123"})
+                .to_string(),
+        )
         .dispatch();
 
     assert_eq!(response.status(), Status::BadRequest);
@@ -160,7 +166,5 @@ fn get_climbing_grades_returns_ok() {
     let response = client.get("/climbing-grade").dispatch();
 
     // May return None if DB not connected, but should not error
-    assert!(
-        response.status() == Status::Ok || response.status() == Status::NotFound
-    );
+    assert!(response.status() == Status::Ok || response.status() == Status::NotFound);
 }

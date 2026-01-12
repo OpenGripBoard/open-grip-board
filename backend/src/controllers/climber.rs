@@ -5,7 +5,10 @@ use validator::Validate;
 use crate::{
     commands::create_climber::CreateClimber,
     dto::{
-        request::{login_request_dto::LoginRequestDto, new_climber_dto::NewClimberDto, patch_climber_dto::PatchClimberFavouriteGymDto},
+        request::{
+            login_request_dto::LoginRequestDto, new_climber_dto::NewClimberDto,
+            patch_climber_dto::PatchClimberFavouriteGymDto,
+        },
         response::{auth_response_dto::AuthResponseDto, climber_dto::ClimberDto},
     },
     guards::{auth_guard::AuthenticatedUser, rate_limit_guard::RateLimited},
@@ -77,7 +80,11 @@ pub async fn post_climber_login(
 }
 
 #[openapi]
-#[patch("/climber/<climber_id>/favourite-gyms", format = "json", data = "<climber_patches>")]
+#[patch(
+    "/climber/<climber_id>/favourite-gyms",
+    format = "json",
+    data = "<climber_patches>"
+)]
 pub async fn patch_climber_favourite_gyms(
     auth: AuthenticatedUser,
     service: &State<ClimberService>,

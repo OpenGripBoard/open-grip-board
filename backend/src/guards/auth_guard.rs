@@ -1,8 +1,8 @@
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
+use rocket_autodocu::Result;
 use rocket_autodocu::r#gen::OpenApiGenerator;
 use rocket_autodocu::request::{OpenApiFromRequest, RequestHeaderInput};
-use rocket_autodocu::Result;
 
 use crate::utilities::jwt_util::{self, Claims};
 

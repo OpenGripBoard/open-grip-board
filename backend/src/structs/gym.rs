@@ -2,7 +2,7 @@ use entity::{climbers, gyms, hangboards};
 
 use crate::structs::{climber::Climber, hangboard::Hangboard, location::Location};
 
-pub struct Gym{
+pub struct Gym {
     pub id: i32,
     pub name: String,
     pub location: Location,
@@ -21,9 +21,12 @@ impl From<(gyms::Model, Option<climbers::Model>, Vec<hangboards::Model>)> for Gy
         Gym {
             id: gym.gym_id,
             name: gym.name,
-            location: Location { longitude: gym.location_x, latitude: gym.location_y },
+            location: Location {
+                longitude: gym.location_x,
+                latitude: gym.location_y,
+            },
             admin: climber.unwrap(),
-            hangboards: hangboards,
+            hangboards,
         }
     }
 }

@@ -1,8 +1,9 @@
 use rocket::time::Time;
 
-use crate::structs::{training_template::TrainingTemplate, exercise_record::ExerciseRecord};
+use crate::structs::{exercise_record::ExerciseRecord, training_template::TrainingTemplate};
 
-pub struct TrainingRecord{
+#[allow(dead_code)]
+pub struct TrainingRecord {
     id: i32,
     training_template: TrainingTemplate,
     exercise_records: Vec<ExerciseRecord>,

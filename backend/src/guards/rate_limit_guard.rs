@@ -6,15 +6,14 @@ use governor::state::{InMemoryState, NotKeyed};
 use governor::{Quota, RateLimiter};
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
+use rocket_autodocu::Result;
 use rocket_autodocu::r#gen::OpenApiGenerator;
 use rocket_autodocu::request::{OpenApiFromRequest, RequestHeaderInput};
-use rocket_autodocu::Result;
 
 type GlobalLimiter = RateLimiter<NotKeyed, InMemoryState, DefaultClock>;
 
-static RATE_LIMITER: LazyLock<GlobalLimiter> = LazyLock::new(|| {
-    RateLimiter::direct(Quota::per_second(NonZeroU32::new(10).unwrap()))
-});
+static RATE_LIMITER: LazyLock<GlobalLimiter> =
+    LazyLock::new(|| RateLimiter::direct(Quota::per_second(NonZeroU32::new(10).unwrap())));
 
 pub struct RateLimited;
 

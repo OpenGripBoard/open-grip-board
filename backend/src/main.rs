@@ -4,11 +4,12 @@ use rocket::{fairing::AdHoc, fs::FileServer, response::Redirect, serde::json::Js
 use rocket_autodocu::{openapi_get_routes, swagger_ui::*};
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use serde::Serialize;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 use backend::{
     controllers::{
-        climber::*, climbing_grade_controller::*, gym::*, hangboard_controller::get_hangboard_live_data,
+        climber::*, climbing_grade_controller::*, gym::*,
+        hangboard_controller::get_hangboard_live_data,
     },
     services::{
         climber_service::ClimberService, climbing_grade_service::ClimbingGradeService,
@@ -129,7 +130,11 @@ fn rocket() -> _ {
         .mount("/gym", routes![get_gym, get_gyms, post_new_gym])
         .mount(
             "/climbing-grade",
-            routes![get_climbing_grades, create_climbing_grade, delete_climbing_grade],
+            routes![
+                get_climbing_grades,
+                create_climbing_grade,
+                delete_climbing_grade
+            ],
         )
         .mount("/hangboard", routes![get_hangboard_live_data])
         .mount(
