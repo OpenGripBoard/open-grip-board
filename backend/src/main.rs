@@ -45,10 +45,10 @@ fn health_check() -> Json<HealthResponse> {
 }
 
 fn init_tracing() {
-    tracing_subscriber::registry()
+    let _ = tracing_subscriber::registry()
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
         .with(tracing_subscriber::fmt::layer())
-        .init();
+        .try_init();
 }
 
 fn configure_cors() -> rocket_cors::Cors {
