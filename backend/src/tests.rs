@@ -93,7 +93,10 @@ fn get_climber_with_invalid_token_returns_unauthorized() {
 
 #[test]
 fn jwt_create_and_validate_token() {
-    std::env::set_var("JWT_SECRET", "test_secret_key_for_jwt_testing_min_32_chars");
+    // SAFETY: This test runs in isolation and doesn't share env vars with other threads
+    unsafe {
+        std::env::set_var("JWT_SECRET", "test_secret_key_for_jwt_testing_min_32_chars");
+    }
 
     let token = jwt_util::create_token(1, "test@example.com").expect("should create token");
     let validated = jwt_util::validate_token(&token).expect("should validate token");
@@ -104,7 +107,10 @@ fn jwt_create_and_validate_token() {
 
 #[test]
 fn jwt_invalid_token_fails_validation() {
-    std::env::set_var("JWT_SECRET", "test_secret_key_for_jwt_testing_min_32_chars");
+    // SAFETY: This test runs in isolation and doesn't share env vars with other threads
+    unsafe {
+        std::env::set_var("JWT_SECRET", "test_secret_key_for_jwt_testing_min_32_chars");
+    }
 
     let result = jwt_util::validate_token("invalid.token.here");
     assert!(result.is_err());

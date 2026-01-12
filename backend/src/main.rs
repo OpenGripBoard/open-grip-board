@@ -32,7 +32,7 @@ pub struct HealthResponse {
 
 #[get("/")]
 fn get_root() -> Redirect {
-    Redirect::to(format!("{}/swagger-ui", BASE_URI))
+    Redirect::to(format!("{}/swagger-ui/", BASE_URI))
 }
 
 #[get("/health")]
