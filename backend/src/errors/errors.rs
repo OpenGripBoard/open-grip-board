@@ -31,7 +31,7 @@ pub enum AuthentificationError {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum MqttError{
+pub enum MqttError {
     #[error("not found")]
     NotFound,
 }
@@ -39,9 +39,9 @@ pub enum MqttError{
 #[derive(Debug, thiserror::Error)]
 pub enum JwtError {
     #[error("decoding failed")]
-    DecodingError (#[from]base64::DecodeError),
+    DecodingError(#[from] base64::DecodeError),
     #[error("jtw_simple error: {0}")]
     JwtSimpleError(#[from] jwt_simple::Error),
     #[error("secret not found")]
-    MissingSecret (#[from]VarError),
+    MissingSecret(#[from] VarError),
 }

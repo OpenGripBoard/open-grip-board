@@ -5,7 +5,7 @@ use crate::structs::climber::Climber;
 
 #[derive(Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct ClimberDto{
+pub struct ClimberDto {
     id: i32,
     name: String,
 }

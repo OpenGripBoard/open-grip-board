@@ -1,5 +1,5 @@
-use rocket::local::blocking::Client;
 use rocket::http::{RawStr, Status};
+use rocket::local::blocking::Client;
 
 #[test]
 fn hello() {
@@ -25,14 +25,24 @@ fn hello() {
 
         let q = |name, s: &str| match s.is_empty() {
             true => "".into(),
-            false => format!("&{}={}", name, s)
+            false => format!("&{}={}", name, s),
         };
 
-        let uri = format!("/?{}{}{}", q("lang", lang), q("emoji", emoji), q("name", name));
+        let uri = format!(
+            "/?{}{}{}",
+            q("lang", lang),
+            q("emoji", emoji),
+            q("name", name)
+        );
         let response = client.get(uri).dispatch();
         assert_eq!(response.into_string().unwrap(), expected);
 
-        let uri = format!("/?{}{}{}", q("emoji", emoji), q("name", name), q("lang", lang));
+        let uri = format!(
+            "/?{}{}{}",
+            q("emoji", emoji),
+            q("name", name),
+            q("lang", lang)
+        );
         let response = client.get(uri).dispatch();
         assert_eq!(response.into_string().unwrap(), expected);
     }

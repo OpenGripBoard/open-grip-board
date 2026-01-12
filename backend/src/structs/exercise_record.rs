@@ -1,6 +1,6 @@
 use crate::structs::{exercise_template::ExerciseTemplate, record::Record};
 
-pub struct ExerciseRecord{
+pub struct ExerciseRecord {
     id: i32,
     exercise_template: ExerciseTemplate,
     was_successful: bool,

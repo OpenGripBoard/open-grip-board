@@ -1,14 +1,16 @@
 use entity::climbers;
 
-use crate::structs::{gym::Gym, training_template::TrainingTemplate, training_record::TrainingRecord};
+use crate::structs::{
+    gym::Gym, training_record::TrainingRecord, training_template::TrainingTemplate,
+};
 
-pub struct Climber{
+pub struct Climber {
     pub id: i32,
     pub email: String,
     pub username: String,
     pub training_records: Option<Vec<TrainingRecord>>,
     pub favourite_trainings: Option<Vec<TrainingTemplate>>,
-    pub favourite_gyms: Option<Vec<Gym>>
+    pub favourite_gyms: Option<Vec<Gym>>,
 }
 
 impl From<climbers::Model> for Climber {

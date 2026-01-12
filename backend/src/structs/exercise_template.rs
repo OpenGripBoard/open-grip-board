@@ -2,7 +2,7 @@ use sea_orm::prelude::DateTime;
 
 use crate::structs::grip_type::GripType;
 
-pub struct ExerciseTemplate{
+pub struct ExerciseTemplate {
     id: i32,
     active_duration: DateTime,
     active_force: i32,
