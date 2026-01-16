@@ -1,25 +1,38 @@
 #include <Arduino.h>
 #include <SerialLog.h>
 #include <HX711.h>
-#include <WiFi.h>
 #include <MQTT.h>
+
+#ifdef ARDUINO_ARCH_ESP8266
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#elif defined(ARDUINO_ARCH_ESP32)
+#include <WiFi.h>
 #include <ESPmDNS.h>
+#endif
 
 //// SERVICE INSTANTIATION ////
 SerialLog logger(SerialLog::DEBUG);
 HX711 loadcell;
 
-//// PIN DEFFINITIONS (keep 0,1,2,3,12,15 free to avoid breaking the upload) ////
+//// PIN DEFINITIONS (keep boot pins free) ////
+#ifdef ARDUINO_ARCH_ESP32
 const int LOADCELL_DOUT_PIN = 5; // D1
 const int LOADCELL_SCK_PIN = 4;  // D2
+#elif defined(ARDUINO_ARCH_ESP8266)
+const int LOADCELL_DOUT_PIN = D2; // safe for ESP8266
+const int LOADCELL_SCK_PIN = D1;  // safe for ESP8266
+#endif
 
 //// CONSTANTS ////
 const long LOADCELL_OFFSET = 50682624;
 const long LOADCELL_DIVIDER = 10;
+
 //// WiFi ////
 const char *WIFI_SSID = "SSID";
 const char *WIFI_PASSWORD = "password";
 WiFiClient wifiClient;
+
 //// MQTT ////
 const char *HOST_URL = "broker.local";
 const char *MQTT_TOPIC_STATUS = "sensor/status";
@@ -30,12 +43,14 @@ MQTTClient mqtt;
 void setup()
 {
   delay(2000);
-  // initialize loadcell adc
+
+  // initialize loadcell
   logger.log("\nInitialize HX711 library", SerialLog::DEBUG);
   loadcell.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   loadcell.set_offset(loadcell.read_average(10)); // tare empty scale
   loadcell.set_scale(100);                        // ca grams
-  // connect to Wifi
+
+  // connect to WiFi
   logger.log("\nConnecting to WiFi...", SerialLog::DEBUG);
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -48,14 +63,22 @@ void setup()
   logger.log("\nIP address: ", SerialLog::DEBUG);
   logger.log(WiFi.localIP().toString(), SerialLog::DEBUG);
 
+  // mDNS setup
+#ifdef ARDUINO_ARCH_ESP32
   if (MDNS.begin("esp32"))
   {
+#elif defined(ARDUINO_ARCH_ESP8266)
+  if (MDNS.begin("esp8266"))
+  {
+#endif
     logger.log("mDNS responder started", SerialLog::DEBUG);
   }
   else
   {
     logger.log("Error setting up mDNS responder!", SerialLog::DEBUG);
   }
+
+  // resolve broker hostname
   IPAddress brokerIP;
   if (WiFi.hostByName(HOST_URL, brokerIP))
   {
@@ -70,6 +93,7 @@ void setup()
   logger.log("\nConnecting to MQTT...", SerialLog::DEBUG);
   mqtt.begin(brokerIP, MQTT_PORT, wifiClient);
   mqtt.connect("arduino", "public", "public");
+
   // Wait for MQTT connection
   int retry_count = 0;
   while (!mqtt.connected() && retry_count < 10)
@@ -106,7 +130,6 @@ void loop()
   }
 
   bool published = mqtt.publish(MQTT_TOPIC_STATUS, "idle");
-
   if (published)
   {
     logger.log("\nMQTT status sent successfully", SerialLog::DEBUG);
