@@ -1,3 +1,5 @@
+use std::env::VarError;
+
 #[derive(Debug, thiserror::Error)]
 pub enum RepositoryError {
     #[error("Database error: {0}")]
@@ -29,7 +31,17 @@ pub enum AuthentificationError {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum MqttError{
+pub enum MqttError {
     #[error("not found")]
     NotFound,
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum JwtError {
+    #[error("decoding failed")]
+    DecodingError(#[from] base64::DecodeError),
+    #[error("jtw_simple error: {0}")]
+    JwtSimpleError(#[from] jwt_simple::Error),
+    #[error("secret not found")]
+    MissingSecret(#[from] VarError),
 }
