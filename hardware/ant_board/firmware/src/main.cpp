@@ -10,8 +10,8 @@ SerialLog logger(SerialLog::DEBUG);
 HX711 loadcell;
 
 //// PIN DEFFINITIONS (keep 0,1,2,3,12,15 free to avoid breaking the upload) ////
-const int LOADCELL_DOUT_PIN = 5;
-const int LOADCELL_SCK_PIN = 4;
+const int LOADCELL_DOUT_PIN = 5; // D1
+const int LOADCELL_SCK_PIN = 4;  // D2
 
 //// CONSTANTS ////
 const long LOADCELL_OFFSET = 50682624;
@@ -48,15 +48,21 @@ void setup()
   logger.log("\nIP address: ", SerialLog::DEBUG);
   logger.log(WiFi.localIP().toString(), SerialLog::DEBUG);
 
-  if (MDNS.begin("esp32")) {
+  if (MDNS.begin("esp32"))
+  {
     logger.log("mDNS responder started", SerialLog::DEBUG);
-  } else {
+  }
+  else
+  {
     logger.log("Error setting up mDNS responder!", SerialLog::DEBUG);
   }
   IPAddress brokerIP;
-  if (WiFi.hostByName(HOST_URL, brokerIP)) {
+  if (WiFi.hostByName(HOST_URL, brokerIP))
+  {
     logger.log("Broker IP: " + brokerIP.toString(), SerialLog::DEBUG);
-  } else {
+  }
+  else
+  {
     logger.log("Failed to resolve broker.local", SerialLog::DEBUG);
   }
 
@@ -114,11 +120,13 @@ void loop()
   {
     int measurement_no = 0;
     mqtt.publish(MQTT_TOPIC_STATUS, "measuring");
-    while (measurement_no <=1000){
+    while (measurement_no <= 1000)
+    {
       measurement_no += 1;
       long reading = loadcell.get_units(3);
-      mqtt.publish(MQTT_TOPIC_MEASUREMENT,String(reading).c_str());
-      if (measurement_no % 10 == 0) {
+      mqtt.publish(MQTT_TOPIC_MEASUREMENT, String(reading).c_str());
+      if (measurement_no % 10 == 0)
+      {
         logger.log("\nWeight: " + String(reading), SerialLog::DEBUG);
       }
       delay(1);
@@ -128,7 +136,7 @@ void loop()
   {
     Serial.println("HX711 not found.");
   }
-  
+
   mqtt.publish(MQTT_TOPIC_STATUS, "idle");
   delay(3000);
 }
