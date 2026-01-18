@@ -10,6 +10,7 @@ use crate::{
         },
         response::climber_dto::ClimberDto,
     },
+    guards::rate_limit_guard::RateLimited,
     services::{climber_service::ClimberService, gym_service::GymService},
     structs::climber::Climber,
 };
@@ -17,6 +18,7 @@ use crate::{
 #[openapi]
 #[get("/climber/<climber_id>")]
 pub async fn get_climber(
+    _rate_limit: RateLimited,
     service: &State<ClimberService>,
     climber_id: i32,
 ) -> Option<Json<ClimberDto>> {
@@ -28,6 +30,7 @@ pub async fn get_climber(
 #[openapi]
 #[post("/climber", format = "json", data = "<new_climber_dto>")]
 pub async fn post_new_climber(
+    _rate_limit: RateLimited,
     service: &State<ClimberService>,
     new_climber_dto: Json<NewClimberDto>,
 ) -> Status {
@@ -41,6 +44,7 @@ pub async fn post_new_climber(
 #[openapi]
 #[post("/climber/login", data = "<login_request_dto>")]
 pub async fn post_climber_login(
+    _rate_limit: RateLimited,
     service: &State<ClimberService>,
     login_request_dto: Json<LoginRequestDto>,
 ) -> Result<Json<ClimberDto>, Status> {
@@ -60,6 +64,7 @@ pub async fn post_climber_login(
     data = "<climber_patches>"
 )]
 pub async fn patch_climber_favourite_gyms(
+    _rate_limit: RateLimited,
     service: &State<ClimberService>,
     climber_id: i32,
     climber_patches: Json<PatchClimberFavouriteGymDto>,
