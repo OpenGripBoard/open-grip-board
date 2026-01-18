@@ -12,13 +12,14 @@ use crate::{
     },
     guards::rate_limit_guard::RateLimited,
     services::{climber_service::ClimberService, gym_service::GymService},
-    structs::climber::Climber,
+    structs::{authenticated_user::AuthenticatedUser, climber::Climber},
 };
 
 #[openapi]
 #[get("/climber/<climber_id>")]
 pub async fn get_climber(
     _rate_limit: RateLimited,
+    _auth_user: AuthenticatedUser,
     service: &State<ClimberService>,
     climber_id: i32,
 ) -> Option<Json<ClimberDto>> {
@@ -65,11 +66,15 @@ pub async fn post_climber_login(
 )]
 pub async fn patch_climber_favourite_gyms(
     _rate_limit: RateLimited,
+    auth_user: AuthenticatedUser,
     service: &State<ClimberService>,
     climber_id: i32,
     climber_patches: Json<PatchClimberFavouriteGymDto>,
     gym_service: &State<GymService>,
 ) -> Status {
+    if auth_user.climber_id != climber_id {
+        return Status::Forbidden;
+    }
     match service
         .patch_climber_favourite_gyms(climber_id, climber_patches.into_inner(), gym_service)
         .await
