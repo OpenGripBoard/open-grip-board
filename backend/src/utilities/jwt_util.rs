@@ -7,8 +7,8 @@ use crate::errors::errors::JwtError;
 
 #[derive(Serialize, Deserialize)]
 pub struct ClimberDetailsClaim {
-    climber_id: i32,
-    email: String,
+    pub climber_id: i32,
+    pub email: String,
 }
 
 fn get_key() -> Result<HS256Key, JwtError> {
