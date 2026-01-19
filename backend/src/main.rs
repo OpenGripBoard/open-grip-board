@@ -2,7 +2,7 @@ use std::env;
 
 use backend::{
     controllers::{
-        climber::*, climbing_grade_controller::*, gym::*,
+        climber_controller::*, climbing_grade_controller::*, gym::*,
         hangboard_controller::get_hangboard_live_data,
     },
     services::{

@@ -17,5 +17,6 @@ schemars = "0.8.15"
 entity = { path = "./entity" }
 argon2 = "0.5.3"
 rumqttc = "0.25.1"
-jwt-simple = "0.12.13"
+jwt-simple = { version = "0.12.13", default-features = false, features = ["pure-rust"] }
 base64 = "0.22.1"
+governor = "0.10.4"

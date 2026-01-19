@@ -2,6 +2,7 @@ mod commands;
 pub mod controllers;
 mod dto;
 mod errors;
+mod guards;
 mod repositories;
 pub mod services;
 mod structs;

@@ -1,3 +1,4 @@
+pub mod authenticated_user;
 pub mod climber;
 pub mod climbing_grade;
 mod exercise_record;

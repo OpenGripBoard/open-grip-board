@@ -28,6 +28,9 @@ pub enum AuthentificationError {
 
     #[error("Internal processing failed")]
     InternalError,
+
+    #[error("Token not valid")]
+    InvalidToken,
 }
 
 #[derive(Debug, thiserror::Error)]
