@@ -1,0 +1,25 @@
+@import url("./color.css");
+@import url("./text-style.css");
+@import url("./header.css");
+@import url("./main.css");
+@import url("./footer.css");
+
+*{
+    box-sizing: border-box;
+}
+
+html{
+    font-size: 100%;
+    align-items: center;
+}
+
+body{
+    margin: 0;
+    background-color: var(--bg-color);
+    width: 100;
+    min-height: 100vh ;
+}
+
+p{
+    hyphens: auto;
+}

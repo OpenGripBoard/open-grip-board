@@ -1,0 +1,21 @@
+header{
+    width: min(80vw, 40rem);
+    margin: auto;
+    margin-top: 10vw;
+}
+
+nav{
+    background-color: var(--bg-color-light);
+    border-radius: 1rem;
+    width: 100%;
+}
+
+nav>ul{
+    display: flex;
+    width: 100%;
+    padding-left: 0;
+}
+
+nav>ul>li{
+    padding: 1rem;
+}

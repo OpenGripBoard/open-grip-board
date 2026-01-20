@@ -1,0 +1,17 @@
+main {
+    width: min(80vw, 40rem);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: auto;
+    min-height: 100vh;
+}
+
+main>a{
+    background-color: var(--accent-color);
+    padding: 1rem;
+    border-radius: 50vh;
+    color: var(--text-color-inverted);
+    display: inline-block;
+    margin: 2rem auto;
+}
