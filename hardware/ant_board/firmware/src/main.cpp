@@ -34,9 +34,11 @@ const char *WIFI_PASSWORD = "password";
 WiFiClient wifiClient;
 
 //// MQTT ////
-const char *HOST_URL = "broker.local";
-const char *MQTT_TOPIC_STATUS = "sensor/status";
-const char *MQTT_TOPIC_MEASUREMENT = "sensor/measurement";
+const char *HOST_URL = "opengripboard.org";
+const char *MQTT_USERNAME = "username";
+const char *MQTT_PASSWORD = "password";
+const char *MQTT_TOPIC_STATUS = "1234/status";
+const char *MQTT_TOPIC_MEASUREMENT = "1234;
 const int MQTT_PORT = 1883;
 MQTTClient mqtt;
 
@@ -92,7 +94,7 @@ void setup()
   // initialize mqtt
   logger.log("\nConnecting to MQTT...", SerialLog::DEBUG);
   mqtt.begin(brokerIP, MQTT_PORT, wifiClient);
-  mqtt.connect("arduino", "public", "public");
+  mqtt.connect("arduino", MQTT_USERNAME, MQTT_PASSWORD);
 
   // Wait for MQTT connection
   int retry_count = 0;
