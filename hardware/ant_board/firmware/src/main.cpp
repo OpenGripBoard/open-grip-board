@@ -38,7 +38,7 @@ const char *HOST_URL = "opengripboard.org";
 const char *MQTT_USERNAME = "username";
 const char *MQTT_PASSWORD = "password";
 const char *MQTT_TOPIC_STATUS = "1234/status";
-const char *MQTT_TOPIC_MEASUREMENT = "1234;
+const char *MQTT_TOPIC_MEASUREMENT = "1234";
 const int MQTT_PORT = 1883;
 MQTTClient mqtt;
 
