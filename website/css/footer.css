@@ -1,0 +1,17 @@
+footer{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--bg-color-dark);
+    padding: 1rem;
+    margin-top: auto;
+}
+
+footer p{
+    text-align: center;
+}
+
+footer a{
+    align-self: center;
+    margin-bottom: 1rem;
+}
