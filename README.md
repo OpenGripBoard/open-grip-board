@@ -1,16 +1,12 @@
 # open-grip-board
 A grip strenght measuring board
 
-## Developer setup
+## Project website
 
-To start the development server spin up the docker compose in the root folder.
+### [www.opengripboard.org](https://www.opengripboard.org)
 
-```bash
-docker compose up -d
-```
+## Project repositories
 
-### Upate entities
+### [Firmware](https://github.com/OpenGripBoard/open-grip-board-firmware) - The firmware fo the microcontroller in the hangboard.
 
-```bash
-sea-orm-cli generate entity --output-dir ./entity/src -l
-```
+### [Companion App](https://github.com/OpenGripBoard/open-grip-board-app) - The Companion app for recording trainings on your phone.
